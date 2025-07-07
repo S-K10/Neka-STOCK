@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import & Export - Neka Stock</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <div class="logo">
+        <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+    </div>
+    <ul>
+        <li><a href="index.html">Accueil</a></li>
+        
+        <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background-color: #121212; color: gold; }
+        h1 { color: white; }
+        .container { background: black; padding: 20px; border-radius: 5px; width: 50%; margin: auto; border: 1px solid gold; }
+        button, input { background: gold; color: black; padding: 10px; border: none; cursor: pointer; margin: 5px; }
+        button:hover { background: white; }
+        .logo-img {
+    max-width: 150px;
+    height: center;
+    align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>📂 Import & Export MySQL</h1>
+
+    <div class="container">
+        <h2>📥 Importer un Fichier</h2>
+        <input type="file" id="importFile" accept=".csv, .xlsx" />
+        <button onclick="importerDonnees()">📥 Importer</button>
+    </div>
+
+    <div class="container">
+        <h2>📤 Exporter les Données</h2>
+        <button onclick="exporterCSV()">📤 CSV</button>
+        <button onclick="exporterExcel()">📤 Excel</button>
+        <button onclick="exporterJSON()">📤 JSON</button>
+    </div>
+
+    <script>
+        function importerDonnees() {
+            let file = document.getElementById("importFile").files[0];
+            if (!file) return alert("Sélectionnez un fichier !");
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                let data = e.target.result;
+                let workbook = XLSX.read(data, { type: "binary" });
+                let sheetName = workbook.SheetNames[0];
+                let jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+                fetch("import.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(jsonData)
+                })
+                .then(res => res.text())
+                .then(alert)
+                .catch(console.error);
+            };
+
+            reader.readAsBinaryString(file);
+        }
+
+        function exporterCSV() { window.location.href = "export.php?format=csv"; }
+        function exporterExcel() { window

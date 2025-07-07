@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques & Prévisions - Neka Stock</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="logo">
+        <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+    </div>
+    <ul>
+        <li><a href="index.html">Accueil</a></li>
+        
+        <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+    <style>
+        body {
+            background-color: black;
+            color: rgb(235, 213, 89);
+            font-family: Arial, sans-serif;
+        }
+         .logo-img {
+    max-width: 150px;
+    height: center;
+    align-items: center;
+        }
+        .container {
+            width: 90%;
+            margin: auto;
+            text-align: center;
+        }
+        .graph-container {
+            display: none;
+            margin: 20px 0;
+        }
+        select, button {
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+        }
+        canvas {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Statistiques & Prévisions - Neka Stock</h1>
+
+    <label for="viewMode">Choisissez l'affichage :</label>
+    <select id="viewMode">
+        <option value="statique">Statique</option>
+        <option value="dynamique">Dynamique</option>
+    </select>
+    <button onclick="updateView()">Appliquer</button>
+
+    <div id="statiqueView" class="graph-container">
+        <h2>Statistiques de Vente (Statique)</h2>
+        <p>Dernière mise à jour : <span id="lastUpdate">-</span></p>
+        <p>Chiffre d'affaires : <b> 1 200 000 FCFA</b></p>
+        <p>Produits vendus : <b>350 unités</b></p>
+    </div>
+
+    <div id="dynamiqueView" class="graph-container">
+        <h2>Statistiques de Vente (Dynamique)</h2>
+        <canvas id="salesChart"></canvas>
+    </div>
+</div>
+
+<script>
+    function updateView() {
+        let choice = document.getElementById("viewMode").value;
+        document.getElementById("statiqueView").style.display = (choice === "statique") ? "block" : "none";
+        document.getElementById("dynamiqueView").style.display = (choice === "dynamique") ? "block" : "none";
+        
+        if (choice === "dynamique") {
+            renderChart();
+        }
+    }
+
+    function renderChart() {
+        const ctx = document.getElementById("salesChart").getContext("2d");
+        new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: ["Jan", "Fév", "Mar", "Avr", "Mai"],
+                datasets: [{
+                    label: "Ventes en FCFA",
+                    data: [200000, 180000, 250000, 230000, 300000],
+                    backgroundColor: "gold"
+                }]
+            },
+            options: {
+                responsive: true
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

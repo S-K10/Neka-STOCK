@@ -1,0 +1,249 @@
+/* Mise en page générale */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #111; /* Fond noir */
+    color: white; /* Texte en blanc */
+}
+
+/* Header - Logo, contact et navigation */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Correction ici */
+    padding: 20px;
+    background-color: #333; /* Couleur de fond sombre pour le header */
+    color: white;
+    flex-wrap: wrap;
+}
+
+.logo-img {
+    max-width: 180px;
+}
+
+.contact-info p {
+    margin: 5px;
+    font-size: 0.9em;
+}
+
+nav ul {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+nav ul li {
+    margin-left: 20px;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: rgb(254, 233, 109); /* Texte des liens en or */
+    font-size: 1.2em;
+}
+
+/* Section principale avec texte d'introduction */
+main {
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* Hero Section */
+.hero {
+    background-color: #333;
+    padding: 40px 20px;
+    color: white;
+    border-radius: 5px;
+}
+
+.hero h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+.cta-button {
+    background-color: #f7d448;
+    color: black;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.cta-button:hover {
+    background-color: #ebcc4f;
+}
+
+/* Slogan */
+.slogan {
+    margin-top: 40px;
+    background-color: #333;
+    padding: 20px;
+    color: white;
+    border-radius: 5px;
+}
+
+.slogan h2 {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.slogan p {
+    font-size: 1.2em;
+}
+
+/* Fonctionnalités - Boutons */
+.features {
+    margin-top: 50px;
+}
+
+.feature-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.feature-button {
+    background-color: #ffe16a;
+    color: black;
+    padding: 15px 30px;
+    font-size: 1.2em;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px;
+    width: 200px;
+    text-align: center;
+    transition: background-color 0.3s;
+    display: inline-block;
+}
+
+.feature-button:hover {
+    background-color: #fedf61;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+}
+
+/* Alertes visuelles */
+.alert-red {
+    background-color: #ff4d4d;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.alert-yellow {
+    background-color: #ffcc00;
+    color: black;
+    padding: 10px;
+    border-radius: 5px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.alert-green {
+    background-color: #66cc66;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Media Queries pour la Responsivité */
+@media (max-width: 992px) {
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav ul li {
+        margin: 10px 0;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 2em;
+    }
+
+    .hero p {
+        font-size: 1.1em;
+    }
+
+    .cta-button {
+        font-size: 1.1em;
+        padding: 12px 25px;
+    }
+
+    .slogan h2 {
+        font-size: 1.8em;
+    }
+
+    .slogan p {
+        font-size: 1.1em;
+    }
+
+    .feature-button {
+        font-size: 1em;
+        padding: 12px 25px;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.5em;
+    }
+
+    .hero p {
+        font-size: 1em;
+    }
+
+    .cta-button {
+        font-size: 1em;
+        padding: 10px 20px;
+    }
+
+    .slogan h2 {
+        font-size: 1.5em;
+    }
+
+    .slogan p {
+        font-size: 1em;
+    }
+
+    .feature-button {
+        font-size: 1em;
+        padding: 10px 20px;
+        width: 100%;
+    }
+}

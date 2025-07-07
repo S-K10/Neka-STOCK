@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Fournisseurs - Neka Stock</title>
+    <div class="logo">
+        <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+    </div>
+    <ul>
+        <li><a href="index.html">Accueil</a></li>
+        
+        <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+    <style>
+        body {
+            background-color: black;
+            color: rgb(254, 227, 75);
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .logo-img {
+    max-width: 150px;
+    height: center;
+    align-items: center;
+}
+        h1 {
+            color: rgb(249, 223, 77);
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: black;
+            color: rgb(255, 233, 105);
+        }
+        table, th, td {
+            border: 1px solid rgb(244, 224, 107);
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .btn {
+            padding: 10px;
+            margin: 5px;
+            background-color: rgb(235, 214, 95);
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: rgb(255, 217, 79);
+        }
+        input, select {
+            padding: 8px;
+            margin: 5px;
+            width: 80%;
+            background-color: black;
+            color: rgb(239, 216, 87);
+            border: 1px solid rgb(249, 227, 100);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gestion des Fournisseurs - Neka Stock</h1>
+
+    <div class="container">
+        <h2>Ajouter un Fournisseur</h2>
+        <input type="text" id="nom" placeholder="Nom du fournisseur">
+        <input type="text" id="adresse" placeholder="Adresse">
+        <input type="text" id="telephone" placeholder="Téléphone">
+        <input type="email" id="email" placeholder="Email">
+        <input type="text" id="site" placeholder="Site web (facultatif)">
+        <select id="paiement">
+            <option>30 jours</option>
+            <option>Paiement à réception</option>
+            <option>Autres</option>
+        </select>
+        <button class="btn" onclick="ajouterFournisseur()">Ajouter</button>
+
+        <h2>Liste des Fournisseurs</h2>
+        <input type="text" id="recherche" onkeyup="rechercherFournisseur()" placeholder="Rechercher...">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Adresse</th>
+                    <th>Téléphone</th>
+                    <th>Email</th>
+                    <th>Conditions de paiement</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tableFournisseurs">
+                <!-- Les fournisseurs ajoutés apparaîtront ici -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let fournisseurs = [];
+
+        function ajouterFournisseur() {
+            let nom = document.getElementById("nom").value;
+            let adresse = document.getElementById("adresse").value;
+            let telephone = document.getElementById("telephone").value;
+            let email = document.getElementById("email").value;
+            let site = document.getElementById("site").value;
+            let paiement = document.getElementById("paiement").value;
+
+            if (nom === "" || adresse === "" || telephone === "" || email === "") {
+                alert("Veuillez remplir tous les champs obligatoires.");
+                return;
+            }
+
+            let fournisseur = { nom, adresse, telephone, email, site, paiement };
+            fournisseurs.push(fournisseur);
+            afficherFournisseurs();
+            viderFormulaire();
+        }
+
+        function afficherFournisseurs() {
+            let tbody = document.getElementById("tableFournisseurs");
+            tbody.innerHTML = "";
+
+            fournisseurs.forEach((f, index) => {
+                let tr = `<tr>
+                    <td>${f.nom}</td>
+                    <td>${f.adresse}</td>
+                    <td>${f.telephone}</td>
+                    <td>${f.email}</td>
+                    <td>${f.paiement}</td>
+                    <td>
+                        <button class="btn" onclick="modifierFournisseur(${index})">Modifier</button>
+                        <button class="btn" onclick="supprimerFournisseur(${index})">Supprimer</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        function supprimerFournisseur(index) {
+            if (confirm("Voulez-vous supprimer ce fournisseur ?")) {
+                fournisseurs.splice(index, 1);
+                afficherFournisseurs();
+            }
+        }
+
+        function modifierFournisseur(index) {
+            let fournisseur = fournisseurs[index];
+            document.getElementById("nom").value = fournisseur.nom;
+            document.getElementById("adresse").value = fournisseur.adresse;
+            document.getElementById("telephone").value = fournisseur.telephone;
+            document.getElementById("email").value = fournisseur.email;
+            document.getElementById("site").value = fournisseur.site;
+            document.getElementById("paiement").value = fournisseur.paiement;
+
+            fournisseurs.splice(index, 1);
+            afficherFournisseurs();
+        }
+
+        function rechercherFournisseur() {
+            let recherche = document.getElementById("recherche").value.toLowerCase();
+            let tbody = document.getElementById("tableFournisseurs");
+            tbody.innerHTML = "";
+
+            fournisseurs.filter(f => 
+                f.nom.toLowerCase().includes(recherche) ||
+                f.telephone.toLowerCase().includes(recherche) ||
+                f.email.toLowerCase().includes(recherche)
+            ).forEach((f, index) => {
+                let tr = `<tr>
+                    <td>${f.nom}</td>
+                    <td>${f.adresse}</td>
+                    <td>${f.telephone}</td>
+                    <td>${f.email}</td>
+                    <td>${f.paiement}</td>
+                    <td>
+                        <button class="btn" onclick="modifierFournisseur(${index})">Modifier</button>
+                        <button class="btn" onclick="supprimerFournisseur(${index})">Supprimer</button>
+                    </td>
+                </tr>`;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        function viderFormulaire() {
+            document.getElementById("nom").value = "";
+            document.getElementById("adresse").value = "";
+            document.getElementById("telephone").value = "";
+            document.getElementById("email").value = "";
+            document.getElementById("site").value = "";
+            document.getElementById("paiement").value = "30 jours";
+        }
+    </script>
+
+</body>
+</html>

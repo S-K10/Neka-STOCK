@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Stock - Neka Stock</title>
+    <div class="logo">
+        <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+    </div>
+    <ul>
+        <li><a href="index.html">Accueil</a></li>
+        
+        <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+
+    <style>
+        /* Styles généraux */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .logo-img {
+    max-width: 150px;
+    height: center;
+    align-items: center;
+}
+        h1, h2 {
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: none;
+        }
+        input {
+            background: #333;
+            color: white;
+        }
+        button {
+            background-color: rgb(230, 208, 84);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #ebd86c;
+        }
+        .alert {
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .alert-rouge { background: red; }
+        .alert-jaune { background: orange; }
+        .alert-vert { background: green; }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid white;
+        }
+        th {
+            background: rgb(233, 212, 94);
+            color: black;
+        }
+        .btn-supprimer {
+            background: red;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gestion de Stock - Neka Stock</h1>
+    <div class="container">
+        <h2>Ajout d'un Produit</h2>
+        <input type="text" id="nomProduit" placeholder="Nom du produit">
+        <input type="number" id="quantiteEntree" placeholder="Quantité" min="1">
+        <input type="number" id="prixUnitaire" placeholder="Prix unitaire" min="1">
+        <button onclick="ajouterStock()">Ajouter au Stock</button>
+
+        <h2>Sortie de Stock</h2>
+        <input type="text" id="nomProduitSortie" placeholder="Nom du produit">
+        <input type="number" id="quantiteSortie" placeholder="Quantité à retirer" min="1">
+        <button onclick="retirerStock()">Retirer du Stock</button>
+
+        <h2>Stock Actuel</h2>
+        <div id="alertStock" class="alert"></div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Quantité</th>
+                    <th>Prix Unitaire</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="tableStock"></tbody>
+        </table>
+    </div>
+
+    <script>
+        let stock = {};
+
+        function mettreAJourTableau() {
+            const tableStock = document.getElementById("tableStock");
+            tableStock.innerHTML = "";
+
+            for (let produit in stock) {
+                let total = stock[produit].quantite * stock[produit].prix;
+                let row = `<tr>
+                    <td>${produit}</td>
+                    <td>${stock[produit].quantite}</td>
+                    <td>${stock[produit].prix} F</td>
+                    <td>${total} F</td>
+                    <td><button class="btn-supprimer" onclick="supprimerProduit('${produit}')">X</button></td>
+                </tr>`;
+                tableStock.innerHTML += row;
+            }
+            mettreAJourAlerte();
+        }
+
+        function ajouterStock() {
+            let nom = document.getElementById("nomProduit").value.trim();
+            let quantite = parseInt(document.getElementById("quantiteEntree").value);
+            let prix = parseInt(document.getElementById("prixUnitaire").value);
+
+            if (nom === "" || isNaN(quantite) || quantite <= 0 || isNaN(prix) || prix <= 0) {
+                alert("Veuillez entrer des valeurs valides !");
+                return;
+            }
+
+            if (!stock[nom]) {
+                stock[nom] = { quantite: 0, prix: prix };
+            }
+            stock[nom].quantite += quantite;
+            mettreAJourTableau();
+        }
+
+        function retirerStock() {
+            let nom = document.getElementById("nomProduitSortie").value.trim();
+            let quantite = parseInt(document.getElementById("quantiteSortie").value);
+
+            if (nom === "" || isNaN(quantite) || quantite <= 0) {
+                alert("Veuillez entrer une quantité valide !");
+                return;
+            }
+
+            if (!stock[nom] || stock[nom].quantite < quantite) {
+                alert("Stock insuffisant !");
+                return;
+            }
+
+            stock[nom].quantite -= quantite;
+            if (stock[nom].quantite === 0) {
+                delete stock[nom];
+            }
+            mettreAJourTableau();
+        }
+
+        function supprimerProduit(nom) {
+            delete stock[nom];
+            mettreAJourTableau();
+        }
+
+        function mettreAJourAlerte() {
+            let alertBox = document.getElementById("alertStock");
+            alertBox.innerHTML = "";
+            let niveauAlerte = "alert-vert";
+
+            for (let produit in stock) {
+                if (stock[produit].quantite < 20) {
+                    niveauAlerte = "alert-rouge";
+                    alertBox.innerHTML = `⚠ Le produit "${produit}" est en stock critique !`;
+                    break;
+                } else if (stock[produit].quantite < 50) {
+                    niveauAlerte = "alert-jaune";
+                    alertBox.innerHTML = `⚠ Le produit "${produit}" est en stock faible !`;
+                }
+            }
+            alertBox.className = "alert " + niveauAlerte;
+        }
+    </script>
+
+</body>
+</html>

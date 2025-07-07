@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fonctionnalités Comptables - Neka Stock</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #858383;
+    }
+
+    header {
+      background-color: #222;
+      color: rgb(255, 230, 107);
+      padding: 15px;
+      text-align: center;
+    }
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .logo-img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    nav ul {
+      display: flex;
+      justify-content: center;
+      list-style: none;
+      padding: 0;
+      background-color: #333;
+      margin: 0;
+      flex-wrap: wrap;
+    }
+
+    nav li {
+      margin: 5px 15px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    main {
+      width: 90%;
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    h2 {
+      color: #fafafa;
+    }
+
+    form {
+      background: rgb(237, 207, 58);
+      padding: 15px;
+      box-shadow: 0 0 5px rgba(255, 233, 88, 0.1);
+      margin-bottom: 20px;
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+    }
+
+    button {
+      background: #ffe344;
+      color: #000;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #fee944;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      overflow-x: auto;
+    }
+
+    table, th, td {
+      border: 1px solid #7c7c7c;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    @media (max-width: 768px) {
+      nav ul {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      form, table, canvas {
+        font-size: 14px;
+      }
+
+      th, td {
+        padding: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      input, select, button {
+        font-size: 14px;
+      }
+
+      h2 {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Gestion Comptables - Neka Stock</h1>
+  </header>
+
+  <div class="logo">
+    <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+  </div>
+
+  <nav>
+    <ul>
+      <li><a href="index.html">Accueil</a></li>
+      <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+  </nav>
+
+  <main>
+    <section id="ajout-transaction">
+      <h2>Ajouter une Transaction</h2>
+      <form id="transactionForm">
+        <label>Type :</label>
+        <select id="typeTransaction">
+          <option value="recette">Recette</option>
+          <option value="dépense">Dépense</option>
+        </select>
+
+        <label>Montant :</label>
+        <input type="number" id="montant" required>
+
+        <label>Catégorie :</label>
+        <input type="text" id="categorie" required>
+
+        <label>Description :</label>
+        <input type="text" id="description">
+
+        <label>Date :</label>
+        <input type="date" id="dateTransaction" required>
+
+        <button type="submit">Ajouter</button>
+      </form>
+    </section>
+
+    <section id="transactions">
+      <h2>Transactions Comptables</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Montant</th>
+            <th>Catégorie</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="transactionTable">
+          <!-- Transactions insérées par JS -->
+        </tbody>
+      </table>
+    </section>
+
+    <section id="bilan">
+      <h2>Bilan Financier</h2>
+      <p><strong>Total Recettes :</strong> <span id="totalRecettes">0</span> F CFA</p>
+      <p><strong>Total Dépenses :</strong> <span id="totalDepenses">0</span> F CFA</p>
+      <p><strong>Résultat Net :</strong> <span id="resultatNet">0</span> F CFA</p>
+    </section>
+
+    <section id="graphique">
+      <h2>Évolution Financière</h2>
+      <canvas id="financeChart"></canvas>
+    </section>
+
+    <section id="exportation">
+      <h2>Exporter les Données</h2>
+      <button id="exportCSV">Exporter en CSV</button>
+      <button id="exportPDF">Exporter en PDF</button>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let transactions = [];
+
+      const form = document.getElementById("transactionForm");
+      const tableBody = document.getElementById("transactionTable");
+      const totalRecettes = document.getElementById("totalRecettes");
+      const totalDepenses = document.getElementById("totalDepenses");
+      const resultatNet = document.getElementById("resultatNet");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        let type = document.getElementById("typeTransaction").value;
+        let montant = parseFloat(document.getElementById("montant").value);
+        let categorie = document.getElementById("categorie").value;
+        let description = document.getElementById("description").value;
+        let date = document.getElementById("dateTransaction").value;
+
+        if (isNaN(montant) || montant <= 0) {
+          alert("Veuillez entrer un montant valide.");
+          return;
+        }
+
+        let transaction = { date, type, montant, categorie, description };
+        transactions.push(transaction);
+        updateTable();
+      });
+
+      function updateTable() {
+        tableBody.innerHTML = "";
+        let recettes = 0, depenses = 0;
+
+        transactions.forEach((t, index) => {
+          let row = `<tr>
+            <td>${t.date}</td>
+            <td>${t.type}</td>
+            <td>${t.montant}</td>
+            <td>${t.categorie}</td>
+            <td>${t.description}</td>
+            <td><button onclick="deleteTransaction(${index})">Supprimer</button></td>
+          </tr>`;
+          tableBody.innerHTML += row;
+
+          if (t.type === "recette") recettes += t.montant;
+          else depenses += t.montant;
+        });
+
+        totalRecettes.textContent = recettes;
+        totalDepenses.textContent = depenses;
+        resultatNet.textContent = recettes - depenses;
+      }
+
+      window.deleteTransaction = function (index) {
+        transactions.splice(index, 1);
+        updateTable();
+      };
+    });
+  </script>
+</body>
+</html>

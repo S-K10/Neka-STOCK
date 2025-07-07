@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerte Générale - Neka Stock</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+    <div class="logo">
+        <img src="image.png" alt="Logo Neka Stock" class="logo-img">
+    </div>
+    <ul>
+        <li><a href="index.html">Accueil</a></li>
+        
+        <li><a href="compte.html">Mon Compte</a></li>
+    </ul>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: rgb(239, 214, 71);
+            text-align: center;
+            padding: 20px;
+        }
+        .logo-img {
+    max-width: 150px;
+    height: center;
+    align-items: center;
+        }
+        h1, h2 {
+            color: white;
+        }
+        .alert-form {
+            background: black;
+            padding: 20px;
+            border-radius: 5px;
+            width: 50%;
+            margin: auto;
+            border: 1px solid rgb(255, 231, 98);
+        }
+        .alert-form input, .alert-form select {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid rgb(237, 216, 98);
+            background: black;
+            color: white;
+        }
+        .alert-form button {
+            background: rgb(237, 216, 92);
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+        }
+        .alert-form button:hover {
+            background: white;
+        }
+        .alerts-list {
+            margin-top: 20px;
+            width: 80%;
+            margin: auto;
+            background: black;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid rgb(255, 232, 100);
+        }
+        .alert-item {
+            border-bottom: 1px solid rgb(238, 217, 98);
+            padding: 10px;
+        }
+        .alert-item button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔔 Alerte Générale Personnalisée</h1>
+    <p>Définissez des alertes et recevez des notifications par e-mail et SMS.</p>
+
+    <!-- Formulaire d'ajout d'alerte -->
+    <div class="alert-form">
+        <h2>➕ Ajouter une Alerte</h2>
+        <select id="alertType">
+            <option value="stock_bas">📉 Stock Faible</option>
+            <option value="vente_elevee">📈 Vente Élevée</option>
+            <option value="paiement_retard">💰 Paiement en Retard</option>
+        </select>
+        <input type="number" id="alertValue" placeholder="Seuil (ex: 10 unités, 5000 F CFA)" required>
+        <input type="email" id="userEmail" placeholder="Votre Email" required>
+        <input type="tel" id="userPhone" placeholder="Votre Numéro (Ex: +223XXXXXXXXX)" required>
+        <button onclick="ajouterAlerte()">➕ Ajouter</button>
+    </div>
+
+    <!-- Liste des alertes actives -->
+    <div class="alerts-list">
+        <h2>📋 Alertes Actives</h2>
+        <div id="alertsContainer"></div>
+    </div>
+
+    <script>
+        let alertes = [];
+
+        // Initialiser EmailJS (remplacez "user_xxxx" par votre clé EmailJS)
+        emailjs.init("user_xxxx");
+
+        function ajouterAlerte() {
+            let type = document.getElementById("alertType").value;
+            let valeur = document.getElementById("alertValue").value;
+            let email = document.getElementById("userEmail").value;
+            let phone = document.getElementById("userPhone").value;
+
+            if (!valeur || !email || !phone) {
+                alert("Veuillez remplir tous les champs !");
+                return;
+            }
+
+            let nomAlerte = "";
+            if (type === "stock_bas") nomAlerte = "Stock Faible";
+            if (type === "vente_elevee") nomAlerte = "Vente Élevée";
+            if (type === "paiement_retard") nomAlerte = "Paiement en Retard";
+
+            let alerte = {
+                id: Date.now(),
+                type: type,
+                nom: nomAlerte,
+                seuil: valeur,
+                email: email,
+                phone: phone
+            };
+
+            alertes.push(alerte);
+            afficherAlertes();
+            envoyerNotification(alerte);
+        }
+
+        function afficherAlertes() {
+            let container = document.getElementById("alertsContainer");
+            container.innerHTML = "";
+
+            alertes.forEach((alerte, index) => {
+                let div = document.createElement("div");
+                div.classList.add("alert-item");
+                div.innerHTML = `<strong>${alerte.nom}</strong> - Seuil : ${alerte.seuil} 
+                                 <button onclick="supprimerAlerte(${index})">❌ Supprimer</button>`;
+                container.appendChild(div);
+            });
+        }
+
+        function supprimerAlerte(index) {
+            alertes.splice(index, 1);
+            afficherAlertes();
+        }
+
+        function envoyerNotification(alerte) {
+            // Envoi d'email via EmailJS
+            emailjs.send("service_xxxx", "template_xxxx", {
+                nomAlerte: alerte.nom,
+                seuil: alerte.seuil,
+                email: alerte.email
+            }).then(() => {
+                console.log("Email envoyé !");
+            }).catch(err => console.error("Erreur Email:", err));
+
+            // Envoi de SMS via Twilio (Besoin d'un backend PHP/Node.js pour ça)
+            fetch("https://votre-backend.com/envoyer_sms", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    phone: alerte.phone,
+                    message: "🚨 Alerte Neka Stock : '${alerte.nom} - Seuil atteint(${alerte.seuil})
+                })
+            }).then(() => {
+                console.log("SMS envoyé !");
+            }).catch(err => console.error("Erreur SMS:", err));
+        }
+    </script>
+
+</body>
+</html>
